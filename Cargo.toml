@@ -8,7 +8,7 @@ description = "Lua is missing a std library for common function, this is a gradu
 crate-type = ["cdylib"]
 
 [dependencies]
-mlua = { version = "0.6", features = ["module"] }
+mlua = { version = "0.6" }
 
 [features]
 default = ["lua_54"]
@@ -18,15 +18,5 @@ lua_52 = ["mlua/lua52"]
 lua_51 = ["mlua/lua51"]
 lua_jit = ["mlua/luajit"]
 vendored = ["mlua/vendored"]
+module = ["mlua/module"]
 
-[target.x86_64-apple-darwin]
-rustflags = [
-  "-C", "link-arg=-undefined",
-  "-C", "link-arg=dynamic_lookup",
-]
-
-[target.aarch64-apple-darwin]
-rustflags = [
-  "-C", "link-arg=-undefined",
-  "-C", "link-arg=dynamic_lookup",
-]

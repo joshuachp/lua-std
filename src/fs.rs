@@ -4,7 +4,7 @@ use std::fs;
 use mlua::prelude::*;
 
 /// Read the content of a directory returning a string of the file names
-fn read_dir(lua: &Lua, path: String) -> LuaResult<LuaTable> {
+pub fn read_dir(lua: &Lua, path: String) -> LuaResult<LuaTable> {
     let content: Vec<String> = fs::read_dir(path)?
         .map(|entry| {
             entry
@@ -19,6 +19,8 @@ fn read_dir(lua: &Lua, path: String) -> LuaResult<LuaTable> {
     lua.create_sequence_from(content)
 }
 
+/// Lua module exporting fs functions
+#[cfg(feature = "module")]
 #[mlua::lua_module]
 pub fn fs(lua: &Lua) -> LuaResult<LuaTable> {
     let module = lua.create_table()?;
