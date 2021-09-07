@@ -1,0 +1,17 @@
+[package]
+name = "lua-std"
+version = "0.1.0"
+edition = "2018"
+description = "Lua is missing a std library for common function, this is a gradually implementation in rust of ffi functions you don't want to write twice."
+
+[dependencies]
+mlua = "0.6"
+
+[features]
+default = ["all"]
+all = ["mlua/lua54", "mlua/lua53", "mlua/lua52", "mlua/lua51", "mlua/luajit"]
+lua_54 = ["mlua/lua54"]
+lua_53 = ["mlua/lua53"]
+lua_52 = ["mlua/lua52"]
+lua_51 = ["mlua/lua51"]
+lua_jit = ["mlua/luajit"]
