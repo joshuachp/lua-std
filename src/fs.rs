@@ -21,7 +21,6 @@ pub fn read_dir(lua: &Lua, path: String) -> LuaResult<LuaTable> {
 
 /// Lua module exporting fs functions
 #[cfg(feature = "module")]
-#[mlua::lua_module]
 pub fn fs(lua: &Lua) -> LuaResult<LuaTable> {
     let module = lua.create_table()?;
     module.set("read_dir", lua.create_function(read_dir)?)?;

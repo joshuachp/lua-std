@@ -43,7 +43,6 @@ pub fn inspect(lua: &Lua, value: LuaValue) -> LuaResult<String> {
 
 /// Lua module exporting table functions
 #[cfg(feature = "module")]
-#[mlua::lua_module]
 pub fn debug(lua: &Lua) -> LuaResult<LuaTable> {
     let module = lua.create_table()?;
     module.set("inspect", lua.create_function(inspect)?)?;
