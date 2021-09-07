@@ -9,7 +9,7 @@ pub mod fs;
 /// Lua module entry point
 #[cfg(feature = "module")]
 #[mlua::lua_module]
-fn lua_std(lua: &Lua) -> LuaResult<LuaTable> {
+fn std(lua: &Lua) -> LuaResult<LuaTable> {
     let module = lua.create_table()?;
     module.set("debug", debug::debug(lua)?)?;
     module.set("fs", fs::fs(lua)?)?;
