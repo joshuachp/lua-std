@@ -5,6 +5,7 @@ use mlua::prelude::*;
 
 pub mod debug;
 pub mod fs;
+pub mod string;
 
 /// Lua module entry point
 #[cfg(feature = "module")]
@@ -13,5 +14,6 @@ fn std(lua: &Lua) -> LuaResult<LuaTable> {
     let module = lua.create_table()?;
     module.set("debug", debug::debug(lua)?)?;
     module.set("fs", fs::fs(lua)?)?;
+    module.set("string", string::string(lua)?)?;
     Ok(module)
 }
