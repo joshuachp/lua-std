@@ -3,6 +3,12 @@ use std::collections::BTreeMap;
 
 use mlua::prelude::*;
 
+#[derive(Debug, PartialEq, Eq, PartialOrd, Ord)]
+enum DebugTableKey {
+    Index(i64),
+    Name(String),
+}
+
 pub fn inspect(lua: &Lua, value: LuaValue) -> LuaResult<String> {
     let value = match value {
         LuaNil => String::from("nil"),
@@ -13,18 +19,33 @@ pub fn inspect(lua: &Lua, value: LuaValue) -> LuaResult<String> {
         LuaValue::String(string) => format!(r#""{}""#, string.to_str()?),
         LuaValue::Table(table) => {
             let mut str = String::from("{");
-            let mut sorted_table: BTreeMap<String, String> = BTreeMap::new();
+            // Sort the table (key, value) to have a consistent output
+            let mut sorted_table: BTreeMap<DebugTableKey, String> = BTreeMap::new();
             for pair in table.pairs() {
                 let (key, value) = pair?;
-                let key = inspect(lua, key)?;
-                let value = inspect(lua, value)?;
-                sorted_table.insert(key, value);
+                let value_inner = inspect(lua, value)?;
+                match key {
+                    LuaValue::Integer(index) => {
+                        sorted_table.insert(DebugTableKey::Index(index), value_inner);
+                    }
+                    LuaValue::String(name) => {
+                        sorted_table
+                            .insert(DebugTableKey::Name(name.to_str()?.to_string()), value_inner);
+                    }
+                    _ => unreachable!("Error for key type {:?}", key),
+                }
             }
-            let mut pairs = sorted_table.iter();
-            if let Some((key, value)) = pairs.next() {
-                str.push_str(&format!(" {} = {}", key, value));
-                for (key, value) in pairs {
-                    str.push_str(&format!(", {} = {}", key, value));
+            for (i, (key, value)) in sorted_table.iter().enumerate() {
+                if i > 0 {
+                    str.push(',')
+                }
+                match key {
+                    DebugTableKey::Index(key_inner) => {
+                        str.push_str(&format!(" [{}] = {}", key_inner, value));
+                    }
+                    DebugTableKey::Name(key_inner) => {
+                        str.push_str(&format!(" {} = {}", key_inner, value));
+                    }
                 }
             }
             str.push_str(" }");
@@ -61,6 +82,6 @@ mod test {
         let lua = Lua::new();
         let table: LuaValue = lua.load(str).eval().unwrap();
         let result = inspect(&lua, table).unwrap();
-        assert_eq!(result, r#"{ "a" = "b", "c" = { "d" = false }, 1 = 3 }"#);
+        assert_eq!(result, str);
     }
 }
